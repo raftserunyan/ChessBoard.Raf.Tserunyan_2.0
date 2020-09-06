@@ -113,11 +113,11 @@ namespace ChessBoard.Raf.Tserunyan_2._0
                     }
 
                     //Coloring available cells
-                    //foreach (var item in Pieces[1].EatableCells)
-                    //{
-                    //    if (Matrix[i, j] == item)
-                    //        Console.BackgroundColor = ConsoleColor.Green;
-                    //}
+                    foreach (var item in Pieces[0].AvailableCells)
+                    {
+                        if (Matrix[i, j] == item)
+                            Console.BackgroundColor = ConsoleColor.Green;
+                    }
 
                     //Choosing the right ForeColor for a better UI;
                     switch (Console.BackgroundColor)

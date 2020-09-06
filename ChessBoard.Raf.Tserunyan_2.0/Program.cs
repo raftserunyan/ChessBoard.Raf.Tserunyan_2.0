@@ -4,10 +4,6 @@ using System.Collections.Generic;
 
 namespace ChessBoard.Raf.Tserunyan_2._0
 {
-    //Bolor figuraneri skzbnakan texery nermucel
-    //Stugel kareli e ardyoq aydtex texadrel tvyal figury
-    //Skzbum spitak figurnery heto sev tagavory
-    //Hamozvel vor sev tagavory shaxi tak chi
     //Koordinatnery nermuceluc heto spitaknery(hamakargy) sksum en xaxy
 
     class Program
@@ -22,66 +18,65 @@ namespace ChessBoard.Raf.Tserunyan_2._0
 
             AskForCoordinates();
 
+            //Playing logic
+            while (!isMate)
+            {
+                //Checking for mate
+                if (!board.Pieces[0].HasSomewhereToGo)
+                    Mate();
 
-            ////Playing logic
-            //while (!isMate)
-            //{
-            //    //Checking for mate
-            //    if (!board.Pieces[0].HasSomewhereToGo)
-            //        Mate();
+                if (!isMate)
+                {
+                    Console.WriteLine();
+                    Console.Write("Enter new coordinates for the black king (example: 7 F): ");
+                    string coordinates = Console.ReadLine();
 
-            //    if (!isMate)
-            //    {
-            //        Console.WriteLine();
-            //        Console.Write("Enter new coordinates for the black king (example: 7 F): ");
-            //        string coordinates = Console.ReadLine();
+                    try
+                    {
+                        board.Pieces[0].Move(coordinates);
 
-            //        try
-            //        {
-            //            board.Pieces[0].Move(coordinates);
+                        if (board.WhitePieces.Count < 2)
+                        {
+                            Program.isMate = true;
 
-            //            if (board.WhitePieces.Count < 2)
-            //            {
-            //                Program.isMate = true;
+                            board.Pieces[0].AvailableCells.Clear();
+                            Console.Clear();
+                            board.Show();
 
-            //                board.Pieces[0].AvailableCells.Clear();
-            //                Console.Clear();
-            //                board.Show();
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine("You Won! Congratulations!!");
+                            Console.ReadKey();
+                        }
 
-            //                Console.ForegroundColor = ConsoleColor.Green;
-            //                Console.WriteLine("You Won! Congratulations!!");
-            //                Console.ReadKey();
-            //            }
+                        Thread.Sleep(1200);
+                        try
+                        {
+                            SystemMakeMove();
+                        }
+                        catch (Exception e)
+                        {
+                            if (e.Message == "raf")
+                                SystemMakeMove();
+                        }
 
-            //            Thread.Sleep(1200);
-            //            try
-            //            {
-            //                SystemMakeMove();
-            //            }
-            //            catch (Exception e)
-            //            {
-            //                if (e.Message == "raf")
-            //                    SystemMakeMove();
-            //            }
-
-            //            //Check for shakh
-            //            if (IsShakh())
-            //            {
-            //                Console.WriteLine();
-            //                Console.ForegroundColor = ConsoleColor.Yellow;
-            //                Console.WriteLine("System> Shakh!");
-            //                Console.ResetColor();
-            //            }
-            //        }
-            //        catch (Exception e)
-            //        {
-            //            Console.WriteLine();
-            //            Console.ForegroundColor = ConsoleColor.Red;
-            //            Console.WriteLine(e.Message);
-            //            Console.ResetColor();
-            //        }
-            //    }
-            //}
+                        //Check for shakh
+                        if (IsShakh())
+                        {
+                            Console.WriteLine();
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.WriteLine("System> Shakh!");
+                            Console.ResetColor();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine();
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine(e.Message);
+                        Console.ResetColor();
+                    }
+                }
+            }
         }
 
         public static void Mate()
@@ -206,6 +201,8 @@ namespace ChessBoard.Raf.Tserunyan_2._0
                 try
                 {
                     board.Pieces[t].Validate(coordinates);
+                    Piece.SetEatableAndAvailableCells();
+                    board.Show();
                 }
                 catch (Exception e)
                 {

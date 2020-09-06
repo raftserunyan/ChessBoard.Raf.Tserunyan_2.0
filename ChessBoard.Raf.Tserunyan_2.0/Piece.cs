@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace ChessBoard.Raf.Tserunyan_2._0
 {
     public class Piece
-    {
+    { 
         public static Board board;
         public List<object> AvailableCells = new List<object>();
         public List<object> EatableCells = new List<object>();
@@ -18,44 +18,16 @@ namespace ChessBoard.Raf.Tserunyan_2._0
         {
             Name = name;
             Color = color;
-            i = _i;
-            j = _j;
+            I = (byte)_i;
+            I = (byte)_j;
         }
 
         public string Color { get; set; }
         public string Name { get; set; }
-        public int MinI { get; set; }
         public bool IsValid = false;
 
         public byte I;
-        private int i
-        {
-            get { return I; }
-            set
-            {
-                if (value < 0)
-                    I = 0;
-                else if (value > 7)
-                    I = 7;
-                else
-                    I = (byte)value;
-            }
-        }
-
         public byte J;
-        private int j
-        {
-            get { return J; }
-            set
-            {
-                if (value < 0)
-                    J = 0;
-                else if (value > 7)
-                    J = 7;
-                else
-                    J = (byte)value;
-            }
-        }
 
 
         public override string ToString()
@@ -296,24 +268,8 @@ namespace ChessBoard.Raf.Tserunyan_2._0
             {
                 board.Matrix[row, column] = this;
 
-                #region Set available and eatable cells
-                for (int a = board.Pieces.Count - 1; a >= 0; a--)
-                {
-                    if (board.Pieces[a].IsValid)
-                    {
-                        board.Pieces[a].SetEatableCells();
-                    }
-                }
-                for (int a = board.Pieces.Count - 1; a >= 0; a--)
-                {
-                    if (board.Pieces[a].IsValid)
-                    {
-                        board.Pieces[a].SetAvailableCells();
-                    }
-                }
-                #endregion
+                SetEatableAndAvailableCells();
 
-                //Esi mi ban en chi
                 for (int a = board.Pieces.Count - 1; a > 0; a--)
                 {
                     if (board.Pieces[a].IsValid)
@@ -326,15 +282,12 @@ namespace ChessBoard.Raf.Tserunyan_2._0
                     }
                 }
 
-                board.Matrix[row, column] = this;
                 this.I = row;
                 this.J = column;
                 this.IsValid = true;
 
                 if (this.Color == "White")
                     board.WhitePieces.Add(this);
-
-                board.Show();
             }
         }
 
@@ -503,6 +456,23 @@ namespace ChessBoard.Raf.Tserunyan_2._0
             }
         }
 
+        public static void SetEatableAndAvailableCells()
+        {
+            for (int a = board.Pieces.Count - 1; a >= 0; a--)
+            {
+                if (board.Pieces[a].IsValid)
+                {
+                    board.Pieces[a].SetEatableCells();
+                }
+            }
+            for (int a = board.Pieces.Count - 1; a >= 0; a--)
+            {
+                if (board.Pieces[a].IsValid)
+                {
+                    board.Pieces[a].SetAvailableCells();
+                }
+            }
+        }
         public static void ClearAvailableAndEatableCells()
         {
             foreach (Piece item in board.Pieces)
