@@ -4,8 +4,6 @@ using System.Collections.Generic;
 
 namespace ChessBoard.Raf.Tserunyan_2._0
 {
-    //Koordinatnery nermuceluc heto spitaknery(hamakargy) sksum en xaxy
-
     class Program
     {
         static Board board;
@@ -18,63 +16,74 @@ namespace ChessBoard.Raf.Tserunyan_2._0
 
             AskForCoordinates();
 
+            bool kingMovedSuccessfully = true;
+
             //Playing logic
             while (!isMate)
             {
-                //Checking for mate
-                if (!board.Pieces[0].HasSomewhereToGo)
-                    Mate();
-
-                if (!isMate)
+                try
                 {
-                    Console.WriteLine();
-                    Console.Write("Enter new coordinates for the black king (example: 7 F): ");
-                    string coordinates = Console.ReadLine();
-
-                    try
+                    if (kingMovedSuccessfully) //Ete black kingy qayl katarec, xaxum a systemy
                     {
-                        board.Pieces[0].Move(coordinates);
+                        Console.WriteLine();
+                        Console.Write("Waiting for the system to make a move...");
 
-                        if (board.WhitePieces.Count < 2)
-                        {
-                            Program.isMate = true;
-
-                            board.Pieces[0].AvailableCells.Clear();
-                            Console.Clear();
-                            board.Show();
-
-                            Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine("You Won! Congratulations!!");
-                            Console.ReadKey();
-                        }
-
-                        Thread.Sleep(1200);
+                        Thread.Sleep(2200);
                         try
                         {
                             SystemMakeMove();
+
+                            //Checking for mate
+                            if (!board.Pieces[0].HasSomewhereToGo)
+                                Mate();
                         }
                         catch (Exception e)
                         {
                             if (e.Message == "raf")
                                 SystemMakeMove();
                         }
-
-                        //Check for shakh
-                        if (IsShakh())
-                        {
-                            Console.WriteLine();
-                            Console.ForegroundColor = ConsoleColor.Yellow;
-                            Console.WriteLine("System> Shakh!");
-                            Console.ResetColor();
-                        }
                     }
-                    catch (Exception e)
+
+                    Console.WriteLine();
+                    Console.Write("Enter new coordinates for the black king (example: 7 F): ");
+                    string coordinates = Console.ReadLine();
+                    board.Pieces[0].Move(coordinates);
+                    kingMovedSuccessfully = true;
+
+
+                    if (board.WhitePieces.Count < 2)
+                    {
+                        Program.isMate = true;
+
+                        board.Pieces[0].AvailableCells.Clear();
+                        Console.Clear();
+                        board.Show();
+
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("You Won! Congratulations!!");
+                        Console.ReadKey();
+                    }
+
+                    //Check for shakh
+                    if (IsShakh())
+                    {
+                        Console.WriteLine();
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("System> Shakh!");
+                        Console.ResetColor();
+                    }
+                }
+
+                catch (Exception e)
+                {
+                    if (e.Message != "raf")
                     {
                         Console.WriteLine();
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine(e.Message);
                         Console.ResetColor();
                     }
+                    kingMovedSuccessfully = false;
                 }
             }
         }
@@ -102,68 +111,53 @@ namespace ChessBoard.Raf.Tserunyan_2._0
             set
             {
                 if (value >= board.WhitePieces.Count)
-                    i = 1;
-                else if (value < 1)
-                    i = 1;
+                    i = 0;
+                else if (value < 0)
+                    i = 0;
                 else
                     i = value;
             }
         }
         private static void SystemMakeMove()
         {
+            bool isEmergency = false;
+
+            for (byte w = 0; w < board.WhitePieces.Count; w++)
+            {
+                if (board.Pieces[0].CanEat(board.WhitePieces[w]))
+                {
+                    ind = w;
+                    isEmergency = true;
+                }
+            }
+
             Piece piece = board.WhitePieces[ind++];
 
-            List<int> lst = new List<int>();
-
-            for (int i = 0; i < 8; i++)
+            if (isEmergency) //Paxnum enq
             {
-                for (int j = 0; j < 8; j++)
-                {
-                    for (int c = 0; c < piece.AvailableCells.Count; c++)
-                    {
-                        if (board.Matrix[i, j] == piece.AvailableCells[c])
-                        {
-                            bool letgo = true;
-                            foreach (object kcell in board.Pieces[0].EatableCells)
-                            {
-                                if (kcell == board.Matrix[i, j])
-                                {
-                                    letgo = false;
-                                    break;
-                                }
-                            }
+                List<int> lst = new List<int>();
 
-                            if (letgo)
+                for (int i = 0; i < 8; i++)
+                {
+                    for (int j = 0; j < 8; j++)
+                    {
+                        for (int c = 0; c < piece.AvailableCells.Count; c++)
+                        {
+                            if (board.Matrix[i, j] == piece.AvailableCells[c])
                             {
-                                if (i == board.Pieces[0].I || Math.Abs(i - board.Pieces[0].I) == 1)
-                                {
-                                    bool g = true;
-                                    foreach (Piece item in board.WhitePieces)
-                                    {
-                                        if (item.I == i)
-                                        {
-                                            g = false;
-                                            break;
-                                        }
-                                    }
-                                    if (g)
-                                        lst.Add(c);
-                                }
+                                if (Math.Abs(i - board.Pieces[0].I) > 1)
+                                    lst.Add(c);
                             }
                         }
                     }
                 }
-            }
 
-            if (lst.Count > 0)
-            {
                 Random rnd = new Random();
                 int indx = rnd.Next(0, lst.Count);
 
-                bool t = true;
-                for (int i = 0; i < 8; i++)
+                if (lst.Count > 0)
                 {
-                    if (t)
+                    for (int i = 0; i < 8; i++)
                     {
                         for (int j = 0; j < 8; j++)
                         {
@@ -175,9 +169,73 @@ namespace ChessBoard.Raf.Tserunyan_2._0
                         }
                     }
                 }
+                else
+                    throw new Exception("raf");
             }
-            else
-                throw new Exception("raf");
+            else //gnum enq mat anelu
+            {
+                List<int> lst = new List<int>();
+
+                for (int i = 0; i < 8; i++)
+                {
+                    for (int j = 0; j < 8; j++)
+                    {
+                        for (int c = 0; c < piece.AvailableCells.Count; c++)
+                        {
+                            if (board.Matrix[i, j] == piece.AvailableCells[c])
+                            {
+                                bool letgo = true;
+                                foreach (object kcell in board.Pieces[0].EatableCells)
+                                {
+                                    if (kcell == board.Matrix[i, j])
+                                    {
+                                        letgo = false;
+                                        break;
+                                    }
+                                }
+
+                                if (letgo)
+                                {
+                                    if (Math.Abs(i - board.Pieces[0].I) < 2)
+                                    {
+                                        bool g = true;
+                                        foreach (Piece item in board.WhitePieces)
+                                        {
+                                            if (item.I == i)
+                                            {
+                                                g = false;
+                                                break;
+                                            }
+                                        }
+                                        if (g)
+                                            lst.Add(c);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (lst.Count > 0)
+                {
+                    Random rnd = new Random();
+                    int indx = rnd.Next(0, lst.Count);
+
+                    for (int i = 0; i < 8; i++)
+                    {
+                        for (int j = 0; j < 8; j++)
+                        {
+                            if (board.Matrix[i, j] == piece.AvailableCells[lst[indx]])
+                            {
+                                piece.Move(i, j);
+                                return;
+                            }
+                        }
+                    }
+                }
+                else
+                    throw new Exception("raf");
+            }
         }
 
         private static bool IsShakh()
