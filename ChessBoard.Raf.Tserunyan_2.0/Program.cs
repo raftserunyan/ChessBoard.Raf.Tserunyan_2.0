@@ -206,7 +206,15 @@ namespace ChessBoard.Raf.Tserunyan_2._0
                                         {
                                             if (item.I == i)
                                             {
-                                                if (item.CanEat(board.Pieces[0]))
+                                                if (item.Name == "King")
+                                                {
+                                                    if (item.CanEat(board.Pieces[0]))
+                                                    {
+                                                        g = false;
+                                                        break;
+                                                    }
+                                                }
+                                                else
                                                 {
                                                     g = false;
                                                     break;
@@ -215,15 +223,7 @@ namespace ChessBoard.Raf.Tserunyan_2._0
                                         }
                                         if (g)
                                         {
-                                            byte hi = piece.I;
-                                            byte hj = piece.J;
-
-                                            piece.Move(i, j);
-                                            if (piece.CanEat(board.Pieces[0]))
-                                            {
-                                                lst.Add(c);
-                                            }
-                                            piece.Move(hi, hj);
+                                            lst.Add(c);
                                         }
                                     }
                                 }
