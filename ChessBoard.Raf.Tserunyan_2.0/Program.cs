@@ -32,10 +32,7 @@ namespace ChessBoard.Raf.Tserunyan_2._0
                         try
                         {
                             SystemMakeMove();
-
-                            //Checking for mate
-                            if (!board.Pieces[0].HasSomewhereToGo)
-                                Mate();
+                            board.Show();
                         }
                         catch (Exception e)
                         {
@@ -44,11 +41,17 @@ namespace ChessBoard.Raf.Tserunyan_2._0
                         }
                     }
 
+                    //Checking for mate
+                    if (!board.Pieces[0].HasSomewhereToGo)
+                        Mate();
+
+                    //board.Show();
                     Console.WriteLine();
                     Console.Write("Enter new coordinates for the black king (example: 7 F): ");
                     string coordinates = Console.ReadLine();
                     board.Pieces[0].Move(coordinates);
                     kingMovedSuccessfully = true;
+                    board.Show();
 
 
                     if (board.WhitePieces.Count < 2)
@@ -203,12 +206,25 @@ namespace ChessBoard.Raf.Tserunyan_2._0
                                         {
                                             if (item.I == i)
                                             {
-                                                g = false;
-                                                break;
+                                                if (item.CanEat(board.Pieces[0]))
+                                                {
+                                                    g = false;
+                                                    break;
+                                                }
                                             }
                                         }
                                         if (g)
-                                            lst.Add(c);
+                                        {
+                                            byte hi = piece.I;
+                                            byte hj = piece.J;
+
+                                            piece.Move(i, j);
+                                            if (piece.CanEat(board.Pieces[0]))
+                                            {
+                                                lst.Add(c);
+                                            }
+                                            piece.Move(hi, hj);
+                                        }
                                     }
                                 }
                             }
@@ -228,6 +244,7 @@ namespace ChessBoard.Raf.Tserunyan_2._0
                             if (board.Matrix[i, j] == piece.AvailableCells[lst[indx]])
                             {
                                 piece.Move(i, j);
+                                board.Show();
                                 return;
                             }
                         }

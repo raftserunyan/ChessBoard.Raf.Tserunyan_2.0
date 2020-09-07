@@ -368,8 +368,6 @@ namespace ChessBoard.Raf.Tserunyan_2._0
                 }
 
                 #endregion
-
-                board.Show();
             }
             catch (Exception e)
             {
@@ -415,8 +413,7 @@ namespace ChessBoard.Raf.Tserunyan_2._0
                 }
 
                 #endregion
-
-                board.Show();
+                
             }
             catch (Exception e)
             {
