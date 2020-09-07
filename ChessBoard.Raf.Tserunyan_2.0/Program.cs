@@ -29,16 +29,9 @@ namespace ChessBoard.Raf.Tserunyan_2._0
                         Console.Write("Waiting for the system to make a move...");
 
                         Thread.Sleep(2200);
-                        try
-                        {
-                            SystemMakeMove();
-                            board.Show();
-                        }
-                        catch (Exception e)
-                        {
-                            if (e.Message == "raf")
-                                SystemMakeMove();
-                        }
+
+                        SystemMakeMove();
+                        board.Show();
                     }
 
                     //Checking for mate
@@ -173,7 +166,7 @@ namespace ChessBoard.Raf.Tserunyan_2._0
                     }
                 }
                 else
-                    throw new Exception("raf");
+                    SystemMakeMove();
             }
             else //gnum enq mat anelu
             {
@@ -251,7 +244,7 @@ namespace ChessBoard.Raf.Tserunyan_2._0
                     }
                 }
                 else
-                    throw new Exception("raf");
+                    SystemMakeMove();
             }
         }
 

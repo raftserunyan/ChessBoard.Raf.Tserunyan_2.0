@@ -29,7 +29,6 @@ namespace ChessBoard.Raf.Tserunyan_2._0
                 new Piece("Rook 2", "White")
             };
             WhitePieces = new List<Piece>();
-            //InitializeWhitePieces();
 
             Create();
         }
@@ -162,7 +161,7 @@ namespace ChessBoard.Raf.Tserunyan_2._0
             Console.WriteLine("-----------------------------------------");
             Console.ResetColor();
         }
-
+        
         public void InitializeWhitePieces()
         {
             WhitePieces = new List<Piece>
